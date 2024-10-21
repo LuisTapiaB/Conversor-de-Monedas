@@ -73,7 +73,7 @@
 }]]></component>
   <component name="RunManager" selected="Application.Principal">
     <configuration name="Principal" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Principal" />
+      <option name="MAIN_CLASS_NAME" value="Principal.Principal" />
       <module name="ConversorDeMonedas" />
       <method v="2">
         <option name="Make" enabled="true" />
