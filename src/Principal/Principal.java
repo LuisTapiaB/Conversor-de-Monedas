@@ -2,12 +2,12 @@ package Principal;
 
 import Modelos.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Principal {
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) {
         Monedas.llenado();
         String monedaBase;
         String monedaObjetivo;
@@ -21,39 +21,34 @@ public class Principal {
             Menu.encabezado();
             System.out.println("ingrese Moneda Base:");
             Menu.menu1();
-            base = teclado.nextInt() - 1; // Pedido de datos de entrada
 
-            if(base == Monedas.Size())break;
-            if(base <= 0 || base > Monedas.Size()) {
-                System.out.println("invalido");
-                base = 0;
-                continue;
-            }
+            // Pedido de datos de entrada
+            try {
+                base = teclado.nextInt() - 1;
+                if(base == Monedas.Size())break;
+                monedaBase = Monedas.getListaClaves().get(base);
+                ArrayList <Monedas.ParMonedas> pares = new ArrayList<>();
 
-            monedaBase = Monedas.getListaClaves().get(base);
-            //Limpieza de buffer
-            teclado.nextLine();
-            ArrayList <Monedas.ParMonedas> pares = new ArrayList<>();
-
-            for (String i : Monedas.getListaClaves()) {
-                if(i.equals(monedaBase)) continue;
-                pares.add(new Monedas.ParMonedas(monedaBase, i));
-                pares.add(new Monedas.ParMonedas(i, monedaBase));
-            }
-
-            if(base < Monedas.Size()) {
+                for (String i : Monedas.getListaClaves()) {
+                    if(i.equals(monedaBase)) continue;
+                    pares.add(new Monedas.ParMonedas(monedaBase, i));
+                    pares.add(new Monedas.ParMonedas(i, monedaBase));
+                }
+                int opcion;
                 while (true){
                     Menu.menu2(base);
-                    int opcion = teclado.nextInt()-1;
-                    teclado.nextLine();
-                    if(opcion == Menu.getContadorMenu2())break;
+                    opcion = teclado.nextInt()-1;
                     monedaBase = pares.get(opcion).base();
                     monedaObjetivo = pares.get(opcion).target();
 
+                    if(opcion == Menu.getContadorMenu2()) break;
+
+                    double monto;
+
                     if(opcion < Menu.getContadorMenu2()){
                         System.out.println("Ingrese el monto a convertir: ("+monedaBase+" >> "+monedaObjetivo+")");
-                        Double monto = teclado.nextDouble();
 
+                            monto = teclado.nextDouble();
                         //Consumo de Api
                         cambioraw = ConsultaApi.pairConversion(monedaBase,monedaObjetivo,monto);
                         ConversionRate cambio = new ConversionRate(cambioraw);
@@ -61,7 +56,11 @@ public class Principal {
                     }
 
                 }
+            } catch (InputMismatchException|IndexOutOfBoundsException e){
+                System.out.println("entrada no valida: "+ e);
+                teclado.nextLine(); // Limpiar el buffer para evitar el bucle infinito
             }
         }
     }
 }
+
